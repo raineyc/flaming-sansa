@@ -44,7 +44,9 @@ operator = lower(operator);
 [G, theta] = find_G_theta(data,operator);
 
 if ~exist('threshold','var');
-    threshold = median(median(G));
+    n = .5;
+    std_val = std(std(G));
+    threshold = median(median(G))+n*std_val;
 end
 
 
@@ -55,7 +57,7 @@ G(G<threshold) = 0;
 
 quantized_theta = mod(round(theta/(pi/4)),4);
 
-[edges_bin, edges_angle, edges_angle_im] = find_edges(data, G, quantized_theta);
+[edges_bin, edges_angle, edges_angle_im] = find_edges( G, quantized_theta);
 
 
 
@@ -125,12 +127,12 @@ theta(theta < 0) = theta(theta < 0) + 2*pi;
 return
 end
 
-function [edges_bin, edges_angle, edges_angle_im] = find_edges(data, G, quantized_theta)
+function [edges_bin, edges_angle, edges_angle_im] = find_edges(G, quantized_theta)
 
 
  
 % Find the size the data matrix
-[rows, cols] = size(data);
+[rows, cols] = size(G);
 
 % allocate the output matricies
 edges_bin = false([rows, cols] );             % This matrix is for storing the binary edge values
